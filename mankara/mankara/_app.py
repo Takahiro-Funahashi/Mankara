@@ -518,20 +518,28 @@ class MankaraGame(BoardSurface):
 
         while isLoop:
 
-            events = pygame.event.get()
-            for event in events:
-                if event.type == pygame.QUIT:
-                    isLoop = False
-                    break
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if not self.mouse_left_clicked(event.pos):
+            if self.player == 0:
+
+                events = pygame.event.get()
+                for event in events:
+                    if event.type == pygame.QUIT:
                         isLoop = False
                         break
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if not self.mouse_left_clicked(event.pos):
+                            isLoop = False
+                            break
 
-            if not isLoop:
-                break
+                if not isLoop:
+                    break
 
-            self.sprite_group.update(events, self.player)
+                self.sprite_group.update(events, self.player)
+            else:
+                n = random.randint(0, 5)
+                if not self.select_pocket(self.player, n):
+                    isLoop = False
+                    break
+
             self.sprite_group.draw(self.game_screen)
             self.peaces_group.draw(self.game_screen)
 
@@ -560,55 +568,60 @@ class MankaraGame(BoardSurface):
         ret = self.pos_check(pos)
         if ret:
             p, n = ret
-            if self.player == p and n < POCKET_NUMBER-1:
-                move_num = self.game_board[p][n]
+            return self.select_pocket(p, n)
 
-                coords_list = list()
+        return True
 
-                turn, number = p, n
-                self.game_board[turn][number] = 0
-                for _ in range(move_num):
-                    number += 1
-                    if number == POCKET_NUMBER-1:
-                        sx, sy, ex, ey = self.coords_borad[turn][number]
-                        if turn != self.player:
-                            number = 0
-                            turn = 1 - turn
-                    elif number > POCKET_NUMBER-1:
+    def select_pocket(self, p, n):
+        if self.player == p and n < POCKET_NUMBER-1:
+            move_num = self.game_board[p][n]
+
+            coords_list = list()
+
+            turn, number = p, n
+            self.game_board[turn][number] = 0
+            for _ in range(move_num):
+                number += 1
+                if number == POCKET_NUMBER-1:
+                    sx, sy, ex, ey = self.coords_borad[turn][number]
+                    if turn != self.player:
                         number = 0
                         turn = 1 - turn
-                        sx, sy, ex, ey = self.coords_borad[turn][number]
-                    else:
-                        sx, sy, ex, ey = self.coords_borad[turn][number]
-                    self.game_board[turn][number] += 1
-                    x = random.randrange(
-                        sx+PEACE_SIZE*1.5, ex-PEACE_SIZE*1.5, 5)
-                    y = random.randrange(
-                        sy+PEACE_SIZE*1.5, ey-PEACE_SIZE*1.5, 5)
-                    coords_list.append([turn, number, x, y])
-
-                if not coords_list:
-                    return
-
-                it_coords = iter(coords_list)
-
-                for i, img in enumerate(self.peaces):
-                    ret = img.pos_check([p, n])
-                    if ret:
-                        num_p, num_n, x, y = next(it_coords)
-                        img.update([num_p, num_n], [x, y])
-                        img.draw(self.game_screen)
-
-                if sum(self.game_board[self.player][:POCKET_NUMBER-1]) == 0:
-                    return False
+                elif number > POCKET_NUMBER-1:
+                    number = 0
+                    turn = 1 - turn
+                    sx, sy, ex, ey = self.coords_borad[turn][number]
                 else:
-                    if any(
-                        [
-                            number != POCKET_NUMBER-1,
-                            turn != self.player
-                        ]
-                    ):
-                        self.player = 1 - self.player
+                    sx, sy, ex, ey = self.coords_borad[turn][number]
+                self.game_board[turn][number] += 1
+                x = random.randrange(
+                    sx+PEACE_SIZE*1.5, ex-PEACE_SIZE*1.5, 5)
+                y = random.randrange(
+                    sy+PEACE_SIZE*1.5, ey-PEACE_SIZE*1.5, 5)
+                coords_list.append([turn, number, x, y])
+
+            if not coords_list:
+                return True
+
+            it_coords = iter(coords_list)
+
+            for i, img in enumerate(self.peaces):
+                ret = img.pos_check([p, n])
+                if ret:
+                    num_p, num_n, x, y = next(it_coords)
+                    img.update([num_p, num_n], [x, y])
+                    img.draw(self.game_screen)
+
+            if sum(self.game_board[self.player][:POCKET_NUMBER-1]) == 0:
+                return False
+            else:
+                if any(
+                    [
+                        number != POCKET_NUMBER-1,
+                        turn != self.player
+                    ]
+                ):
+                    self.player = 1 - self.player
 
         return True
 
