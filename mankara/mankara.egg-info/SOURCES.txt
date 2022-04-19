@@ -1,0 +1,13 @@
+ChangeLog
+LICENSE
+MANIFEST.in
+README.md
+setup.py
+mankara/__init__.py
+mankara/_app.py
+mankara/_log.py
+mankara.egg-info/PKG-INFO
+mankara.egg-info/SOURCES.txt
+mankara.egg-info/dependency_links.txt
+mankara.egg-info/requires.txt
+mankara.egg-info/top_level.txt

@@ -1,0 +1,21 @@
+Metadata-Version: 2.1
+Name: mankara
+Version: 0.0.1
+Summary: mankara
+Home-page: UNKNOWN
+Author: T.Funahashi
+License: MIT License
+Keywords: mankara_game
+Platform: UNKNOWN
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+Provides-Extra: docs
+License-File: LICENSE
+
+# Mankara
+
+## Documentation
+
+## Installation
+
+
